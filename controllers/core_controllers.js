@@ -21,10 +21,10 @@ exports.shorten = (req, res) => {
         [url, short_code],
         (err) => {
             if (err) {
-                res.status(400).json({ message: `Database error: ${err.message}` })
+                return res.status(400).json({ message: `Database error: ${err.message}` })
             }
             else {
-                res.status(200).json({ "short_code": short_code })
+                return res.status(200).json({ "short_code": short_code })
             }
         }
     )
@@ -36,22 +36,16 @@ exports.code = (req, res) => {
         `SELECT original_url FROM Urls WHERE short_code = ?`,
         [code],
         (err, row) => {
-            if (err) {
-                res.status(404).json({ message: "Url not found" })
+            if (err || !row) {
+                return res.status(404).json({ message: "Url not found" })
             }
-            else {
-                res.redirect(row.original_url)
-            }
-        }
-    )
 
-    db.run(
-        `UPDATE Urls SET click_count = click_count + 1 WHERE short_code = ?`,
-        [code],
-        (err) => {
-            if (err) {
-                res.status(400).json({ message: `Database error: ${err.message}` })
-            }
+            db.run(
+                `UPDATE Urls SET click_count = click_count + 1 WHERE short_code = ?`,
+                [code]
+            );
+
+            return res.redirect(row.original_url);
         }
     )
 }
@@ -62,9 +56,10 @@ exports.clicks = (req, res) => {
         "SELECT click_count FROM Urls WHERE short_code = ?",
         [code],
         (err, row) => {
-            if(!err) {
-                res.status(200).json({message: `Clicks : ${row.click_count}`})
+            if (!err && row) {
+                return res.status(200).json({ message: `Clicks : ${row.click_count}` })
             }
+            return res.status(404).json({ message: "Not found" })
         }
     )
-}   
+}
