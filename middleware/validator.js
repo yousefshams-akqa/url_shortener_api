@@ -4,8 +4,12 @@ const validatorMiddleware = (schema) => (req, res, next) => {
         schema.parse(req.body)
         next()
     }
-    catch(err) {
-        return res.status(400).json({message: "Invalid request payload"})
+    catch (error) {
+        return res.status(400).json({
+            error: {
+                message: error.issues.map(issue => `${issue.path}: ${issue.message}`).join("\t\n")
+            }
+        })
     }
 }
 
