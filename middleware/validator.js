@@ -7,7 +7,7 @@ const validatorMiddleware = (schema) => (req, res, next) => {
     catch (error) {
         return res.status(400).json({
             error: {
-                message: error.issues.map(issue => `${issue.path}: ${issue.message}`).join("\t\n")
+                message: error.issues.map(issue => `${issue.path}: ${issue.message}`).join("\t \n")
             }
         })
     }

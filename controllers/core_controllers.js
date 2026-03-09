@@ -5,7 +5,7 @@ exports.home = (req, res) => {
     res.json({ message: "Hello world" })
 }
 
-exports.shorten = (req, res) => {
+exports.shorten = async (req, res) => {
     let url = req.body.url
     console.log(req.body)
     if (!url) {
@@ -16,50 +16,56 @@ exports.shorten = (req, res) => {
     let short_code = generateShortCode()
     console.log(short_code)
 
-    db.run(
-        `INSERT INTO Urls (original_url, short_code) VALUES (?, ?)`,
-        [url, short_code],
-        (err) => {
-            if (err) {
-                return res.status(400).json({ message: `Database error: ${err.message}` })
-            }
-            else {
-                return res.status(200).json({ "short_code": short_code })
-            }
-        }
-    )
+    try {
+        await db`
+            INSERT INTO urls (original_url, short_code)
+            VALUES (${url}, ${short_code})
+        `
+
+        return res.status(200).json({ "short_code": short_code })
+    } catch (error) {
+        return res.status(400).json({ message: `Database error: ${error.message}` })
+    }
 }
 
-exports.code = (req, res) => {
+exports.code = async (req, res) => {
     let code = req.params.code
-    db.get(
-        `SELECT original_url FROM Urls WHERE short_code = ?`,
-        [code],
-        (err, row) => {
-            if (err || !row) {
-                return res.status(404).json({ message: "Url not found" })
-            }
 
-            db.run(
-                `UPDATE Urls SET click_count = click_count + 1 WHERE short_code = ?`,
-                [code]
-            );
+    try {
+        const rows = await db`
+            SELECT original_url FROM urls WHERE short_code = ${code} LIMIT 1
+        `
+        const row = rows[0]
 
-            return res.redirect(row.original_url);
+        if (!row) {
+            return res.status(404).json({ message: "Url not found" })
         }
-    )
+
+        await db`
+            UPDATE urls SET click_count = click_count + 1 WHERE short_code = ${code}
+        `
+
+        return res.redirect(row.original_url)
+    } catch (error) {
+        return res.status(404).json({ message: "Url not found" })
+    }
 }
 
-exports.clicks = (req, res) => {
+exports.clicks = async (req, res) => {
     let code = req.params.code
-    db.get(
-        "SELECT click_count FROM Urls WHERE short_code = ?",
-        [code],
-        (err, row) => {
-            if (!err && row) {
-                return res.status(200).json({ message: `Clicks : ${row.click_count}` })
-            }
+
+    try {
+        const rows = await db`
+            SELECT click_count FROM urls WHERE short_code = ${code} LIMIT 1
+        `
+        const row = rows[0]
+
+        if (!row) {
             return res.status(404).json({ message: "Not found" })
         }
-    )
+
+        return res.status(200).json({ message: `Clicks : ${row.click_count}` })
+    } catch (error) {
+        return res.status(404).json({ message: "Not found" })
+    }
 }

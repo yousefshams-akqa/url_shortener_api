@@ -1,10 +1,7 @@
-const sqlite3 = require('sqlite3').verbose();
+const postgres = require('postgres')
+const constants = require('../constants/constants')
 
-const db = new sqlite3.Database(
-    'url_database.sqlite3',
-    (err) => {
-        console.log(err ? err.message : "✅ Connected to the database.")
-    }
-)
+const connectionString = constants.DATABASE_URL
+const sql = postgres(connectionString, { ssl: 'require' })
 
-module.exports = db
+module.exports = sql
