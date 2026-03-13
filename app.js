@@ -3,7 +3,7 @@ const router = require("./routes/core_routes")
 const express = require("express")
 const constants = require("./constants/constants")
 const app = express()
-const port = constants.PORT || 4000
+const port = constants.PORT
 
 app.use(express.json())
 app.use(logger)
