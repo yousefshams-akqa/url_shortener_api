@@ -1,4 +1,4 @@
-const db = require("../services/db")
+const db = require("../services/database")
 const generateShortCode = require("../services/short_code_service")
 
 exports.home = (req, res) => {
@@ -71,5 +71,5 @@ exports.clicks = async (req, res) => {
 }
 
 exports.health = (req, res) => {
-    return res.status(200).json({status: "Server is healthy!"})
+    return res.status(200).json({ status: "Server is healthy!" })
 }

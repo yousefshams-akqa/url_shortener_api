@@ -3,7 +3,7 @@ const uuid = require("uuid")
 const bcrypt = require('bcrypt');
 var jwt = require('jsonwebtoken');
 
-const db = require("../services/db")
+const db = require("../services/database")
 const constants = require("../constants/constants")
 
 exports.register = async (req, res) => {
