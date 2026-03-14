@@ -69,3 +69,7 @@ exports.clicks = async (req, res) => {
         return res.status(404).json({ message: "Not found" })
     }
 }
+
+exports.health = (req, res) => {
+    return res.status(200).json({status: "Server is healthy!"})
+}

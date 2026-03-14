@@ -9,14 +9,17 @@ const loginValidator = require("../validators/login.validator")
 
 router.get(routes.home, authMiddleware, controller.home)
 
-router.post(routes.shorten, controller.shorten)
+router.get(routes.health, controller.health)
 
-router.get(routes.code, controller.code)
+router.post(routes.shorten, controller.shorten)
 
 router.get(routes.clicks, controller.clicks)
 
 router.post(routes.register, validatorMiddleware(registerValidator), authController.register)
 
 router.post(routes.login, validatorMiddleware(loginValidator), authController.login)
+
+router.get(routes.code, controller.code)
+
 
 module.exports = router
