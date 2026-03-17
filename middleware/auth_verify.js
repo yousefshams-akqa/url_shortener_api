@@ -12,7 +12,7 @@ function authMiddleware(req, res, next) {
         }
 
         const bearerToken = token.split(" ")[1]
-        const payload = jwt.verify(bearerToken, constants.JWT_SECRET)
+        const payload = jwt.verify(bearerToken, constants.ACCESS_SECRET)
 
         req.user = {id : payload.id}
         next()

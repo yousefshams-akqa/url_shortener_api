@@ -6,7 +6,8 @@ const routes = {
     clicks: "/stats/:code",
     register: "/register",
     login: "/login",
-    health: "/health"
+    health: "/health",
+    docs: "/docs"
 }
 
 module.exports = routes
